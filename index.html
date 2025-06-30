@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Chart</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Сначала загружаем внешние библиотеки -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <header>
+            <div class="header-main">
+                <img src="загрузка.png" alt="Логотип" class="header-logo"/>
+                <h1>Торговая платформа</h1>
+            </div>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="chart">График</button>
+                <button class="tab-button" data-tab="monitor">Монитор</button>
+                <button class="tab-button" data-tab="converter">Конвертация</button>
+            </div>
+        </header>
+        <main class="content-wrapper">
+            <!-- Вкладка с графиком -->
+            <div class="tab-content active" id="chart-tab">
+                <div class="crypto-selector">
+                    <select id="cryptoSymbol">
+                        <option value="BTCUSDT">Bitcoin (BTC)</option>
+                        <option value="TRXUSDT">Tron (TRX)</option>
+                        <option value="ETHUSDT">Ethereum (ETH)</option>
+                        <option value="BNBUSDT">Binance Coin (BNB)</option>
+                        <option value="ADAUSDT">Cardano (ADA)</option>
+                        <option value="DOGEUSDT">Dogecoin (DOGE)</option>
+                        <option value="XRPUSDT">Ripple (XRP)</option>
+                        <option value="SOLUSDT">Solana (SOL)</option>
+                        <option value="DOTUSDT">Polkadot (DOT)</option>
+                        <option value="MATICUSDT">Polygon (MATIC)</option>
+                        <option value="SUIUSDT">Sui (SUI)</option>
+                        <option value="AVAXUSDT">Avalanche (AVAX)</option>
+                        <option value="LINKUSDT">Chainlink (LINK)</option>
+                    </select>
+                </div>
+                <div class="controls">
+                    <div class="interval-buttons">
+                        <button class="interval-btn" data-interval="15m">15 мин</button>
+                        <button class="interval-btn" data-interval="30m">30 мин</button>
+                        <button class="interval-btn" data-interval="1h">1 час</button>
+                        <button class="interval-btn" data-interval="1d">1 день</button>
+                    </div>
+                    <div class="date-range">
+                        <input type="date" id="startDate">
+                        <input type="date" id="endDate">
+                    </div>
+                    <button id="themeToggle">🌓</button>
+                </div>
+
+                <div class="chart-container">
+                    <!-- Графики будут добавлены здесь -->
+                </div>
+
+                <div id="candleInfo" class="candle-info">
+                    <!-- Информация о свече будет добавлена здесь -->
+                </div>
+
+                <div class="tools-panel">
+                    <button id="fibonacciTool">Фибоначчи</button>
+                    <button id="removeFibonacci">Удалить Фибоначчи</button>
+                    <button id="clearChart">Очистить все</button>
+                    <button id="exportCSV">Экспорт CSV</button>
+                </div>
+
+                <div class="grid-bot-calculator">
+                    <h3>Расчет Грид-Бота</h3>
+                    <div class="grid-inputs">
+                        <div class="form-group">
+                            <label for="buyPrice">Цена покупки</label>
+                            <input type="number" id="buyPrice" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="sellPrice">Цена продажи</label>
+                            <input type="number" id="sellPrice" step="0.01">
+                        </div>
+                        <button id="calculateGrid">Рассчитать</button>
+                    </div>
+                    <div id="gridResult" class="grid-result"></div>
+                    <div id="gridTradeLog" class="grid-trade-log">
+                        <h4>Лог сделок</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Время</th>
+                                    <th>Тип</th>
+                                    <th>Цена</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gridTradeLogBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка монитора -->
+            <div class="tab-content" id="monitor-tab">
+                <div class="monitor-container">
+                    <div class="monitor-header">
+                        <h2>Монитор криптовалют</h2>
+                        <div class="monitor-controls">
+                            <button id="refreshMonitor">Обновить</button>
+                            <select id="monitorInterval">
+                                <option value="1m">1 минута</option>
+                                <option value="5m">5 минут</option>
+                                <option value="15m">15 минут</option>
+                                <option value="1h">1 час</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="monitor-grid">
+                        <table id="monitorTable">
+                            <thead>
+                                <tr>
+                                    <th>Пара</th>
+                                    <th>Цена</th>
+                                    <th>Изменение (24ч)</th>
+                                    <th>Объем (24ч)</th>
+                                    <th>Макс. цена</th>
+                                    <th>Мин. цена</th>
+                                    <th>RSI</th>
+                                    <th>Тренд</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitorTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка Конвертера -->
+            <div class="tab-content" id="converter-tab">
+              <div id="crypto-converter">
+                <h3>Крипто-конвертер</h3>
+                <input type="number" id="cc-amount" placeholder="Сумма" value="1" />
+                <select id="cc-from"></select>
+                <button id="cc-swap">⇄</button>
+                <select id="cc-to"></select>
+                <button id="cc-convert">Конвертировать</button>
+                <button id="cc-auto">Автообновление</button>
+                <h3 id="cc-result">Результат: ...</h3>
+                <div class="converter-actions">
+                  <button id="cc-export">Экспорт истории</button>
+                  <button id="cc-clear">Очистить историю</button>
+                </div>
+                <div id="cc-history"><strong>История:</strong></div>
+              </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Затем наши скрипты -->
+    <script src="arbitrage.js"></script>
+    <script src="script.js"></script>
+    <script src="monitor.js"></script>
+    <script>
+    // Устанавливаем сегодняшнюю дату по умолчанию для input[type='date']
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var dd = String(today.getDate()).padStart(2, '0');
+        var formatted = yyyy + '-' + mm + '-' + dd;
+        var start = document.getElementById('startDate');
+        var end = document.getElementById('endDate');
+        if (start) start.value = formatted;
+        if (end) end.value = formatted;
+    });
+
+    // --- Логика переключения вкладок ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Deactivate all tabs and content
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Activate the clicked tab and its content
+                tab.classList.add('active');
+                const activeTabContent = document.getElementById(tab.dataset.tab + '-tab');
+                if (activeTabContent) {
+                    activeTabContent.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // --- Логика крипто-конвертера ---
+    (function() {
+        if (!document.getElementById('crypto-converter')) return;
+
+        const symbols = ["BTC", "ETH", "XRP", "BNB", "SOL", "ADA", "SUI", "LINK", "XLM", "AVAX", "TON", "LTC", "DOT", "USDT", "USDC", "RUB", "USD", "EUR"];
+        const fiatSymbols = ["RUB", "USD", "EUR"];
+
+        const amountInput = document.getElementById('cc-amount');
+        const fromSelect = document.getElementById('cc-from');
+        const toSelect = document.getElementById('cc-to');
+        const swapBtn = document.getElementById('cc-swap');
+        const convertBtn = document.getElementById('cc-convert');
+        const autoBtn = document.getElementById('cc-auto');
+        const resultEl = document.getElementById('cc-result');
+        const exportBtn = document.getElementById('cc-export');
+        const clearBtn = document.getElementById('cc-clear');
+        const historyEl = document.getElementById('cc-history');
+
+        let autoUpdateInterval = null;
+
+        // --- Инициализация ---
+        function init() {
+            symbols.forEach(sym => {
+                fromSelect.add(new Option(sym, sym));
+                toSelect.add(new Option(sym, sym));
+            });
+            fromSelect.value = "BTC";
+            toSelect.value = "USDT";
+
+            renderHistory();
+            convert();
+
+            // Event Listeners
+            convertBtn.addEventListener('click', convert);
+            swapBtn.addEventListener('click', swapCurrencies);
+            autoBtn.addEventListener('click', toggleAutoUpdate);
+            clearBtn.addEventListener('click', clearHistory);
+            exportBtn.addEventListener('click', exportHistory);
+        }
+
+        // --- Логика API и конвертации ---
+        async function getPrice(from, to) {
+            const symbol = from + to;
+            try {
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                if (!res.ok) return null;
+                const json = await res.json();
+                return parseFloat(json.price);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function convert() {
+            const amount = parseFloat(amountInput.value) || 1;
+            const from = fromSelect.value;
+            const to = toSelect.value;
+
+            if (from === to) {
+                resultEl.textContent = `Результат: ${amount} ${from}`;
+                return;
+            }
+
+            resultEl.textContent = 'Получение курса...';
+
+            try {
+                let rate = await getPrice(from, to);
+                let result;
+
+                if (rate) {
+                    result = amount * rate;
+                } else {
+                    const inverseRate = await getPrice(to, from);
+                    if (inverseRate) {
+                        result = amount / inverseRate;
+                    } else {
+                        throw new Error('Пара не найдена');
+                    }
+                }
+
+                resultEl.textContent = `Результат: ${result.toFixed(6)} ${to}`;
+                saveHistory(`${amount} ${from} = ${result.toFixed(6)} ${to}`);
+            } catch (e) {
+                resultEl.textContent = 'Ошибка: пара не найдена.';
+            }
+        }
+
+        function swapCurrencies() {
+            [fromSelect.value, toSelect.value] = [toSelect.value, fromSelect.value];
+            convert();
+        }
+
+        function toggleAutoUpdate() {
+            if (autoUpdateInterval) {
+                clearInterval(autoUpdateInterval);
+                autoUpdateInterval = null;
+                autoBtn.textContent = 'Автообновление';
+                autoBtn.style.backgroundColor = 'var(--primary-color)';
+            } else {
+                autoUpdateInterval = setInterval(convert, 10000);
+                autoBtn.textContent = 'Остановить';
+                autoBtn.style.backgroundColor = '#f44336'; // Crimson-like red
+            }
+        }
+
+        // --- Управление историей ---
+        function getHistory() {
+            return JSON.parse(localStorage.getItem('ccHistory') || '[]');
+        }
+
+        function saveHistory(entry) {
+            let history = getHistory();
+            history.unshift(entry);
+            if (history.length > 20) {
+                history = history.slice(0, 20);
+            }
+            localStorage.setItem('ccHistory', JSON.stringify(history));
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const history = getHistory();
+            historyEl.innerHTML = '<strong>История:</strong><br/>' + history.map(h => `<div>${h}</div>`).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('ccHistory');
+            renderHistory();
+        }
+
+        function exportHistory() {
+            const history = getHistory().join('\\n');
+            const blob = new Blob([history], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'conversion_history.txt';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html> 
